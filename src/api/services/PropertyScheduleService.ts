@@ -5,21 +5,22 @@ import { FindManyOptions, FindOneOptions } from 'typeorm';
 
 @Service()
 export class PropertyScheduleService {
-  private categoryRepository = AppDataSource.getRepository(PropertySchedule);
+  private propertyScheduleRepository =
+    AppDataSource.getRepository(PropertySchedule);
 
   public async find(
     condition?: FindManyOptions<PropertySchedule>
   ): Promise<PropertySchedule[]> {
-    return this.categoryRepository.find(condition ?? {});
+    return this.propertyScheduleRepository.find(condition ?? {});
   }
 
   public async findOne(
     condition: FindOneOptions<PropertySchedule>
   ): Promise<PropertySchedule | null> {
-    return this.categoryRepository.findOne(condition);
+    return this.propertyScheduleRepository.findOne(condition);
   }
 
   public async create(entity: PropertySchedule): Promise<PropertySchedule> {
-    return this.categoryRepository.save(entity);
+    return this.propertyScheduleRepository.save(entity);
   }
 }

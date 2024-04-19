@@ -12,22 +12,26 @@ import {
   QueryParam,
 } from 'routing-controllers';
 import { Service } from 'typedi';
-import { CommonService } from '../../services/CommonServices';
 import { instanceToPlain } from 'class-transformer';
 import { PropertyService } from '../../services/PropertyService';
-import { CreatePropertyRequest } from './requests/CreatePropertyRequest';
-import { checkToken } from '../../middlewares/CheckToken';
-import { USER_TYPE } from '../../../config/utils/commonInterfaces';
-import { credential } from '../../../config/utils/env';
-import { LoginRequest } from './requests/LoginRquest';
+import {
+  CreatePropertyRequest,
+  PropertyImageRequest,
+} from './requests/CreatePropertyRequest';
 import { Property } from '../../models/Property';
 import { Query } from 'typeorm/driver/Query';
 import { FindManyOptions } from 'typeorm';
+import { PropertyImageService } from '../../services/PropertyImageService';
+import { PropertyImage } from '../../models/PropertyImage';
+import { validate } from 'class-validator';
 
 @Service()
 @JsonController('/property')
 export class PropertyStoreController {
-  constructor(private propertyService: PropertyService) {
+  constructor(
+    private propertyService: PropertyService,
+    private propertImageService: PropertyImageService
+  ) {
     // --
   }
 
@@ -53,6 +57,8 @@ export class PropertyStoreController {
       }
     }
 
+    condition.relations = ['propertyImage'];
+
     const propertyList = await this.propertyService.find(condition);
 
     return response.status(200).send({
@@ -73,6 +79,7 @@ export class PropertyStoreController {
         id,
         userId: request.userId,
       },
+      relations: ['propertyImage'],
     });
 
     if (!propertyDetail) {
@@ -103,6 +110,17 @@ export class PropertyStoreController {
     property.location = bodyParam.location;
     property.price = bodyParam.price;
 
+    const propertyImages: PropertyImage[] = [];
+
+    for (const _propertyImage of bodyParam.propertyImage) {
+      const propertyImage = new PropertyImage();
+      propertyImage.name = _propertyImage.name;
+      propertyImage.path = _propertyImage.path;
+      propertyImage.isDefault = _propertyImage.isDefault ? 1 : 0;
+      propertyImages.push(propertyImage);
+    }
+    property.propertyImage = propertyImages;
+
     const propertySave = await this.propertyService.save(property);
 
     return response.status(200).send({
@@ -125,6 +143,7 @@ export class PropertyStoreController {
         id,
         userId: request.userId,
       },
+      relations: ['propertyImage'],
     });
 
     if (!propertyExist) {
@@ -139,6 +158,27 @@ export class PropertyStoreController {
     propertyExist.location = bodyParam.location;
     propertyExist.price = bodyParam.price;
     propertyExist.isActive = bodyParam.isActive;
+
+    if (bodyParam.propertyImage?.length) {
+      const propertyImages: PropertyImage[] = [];
+
+      for (const [_ind, _propertyImage] of bodyParam.propertyImage.entries()) {
+        const validationError = await validate(_propertyImage);
+        if (validationError.length) {
+          return response.status(400).send(validationError);
+        }
+        const propertyImage = new PropertyImage();
+        const propertyImageExist = propertyExist.propertyImage[_ind];
+        if (propertyImageExist) {
+          propertyImage.id = propertyImageExist.id;
+        }
+        propertyImage.name = _propertyImage.name;
+        propertyImage.path = _propertyImage.path;
+        propertyImage.isDefault = _propertyImage.isDefault ? 1 : 0;
+        propertyImages.push(propertyImage);
+      }
+      propertyExist.propertyImage = propertyImages;
+    }
 
     const propertySave = await this.propertyService.save(propertyExist);
 

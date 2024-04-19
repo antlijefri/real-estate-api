@@ -4,9 +4,11 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { Commmon } from './Common';
 import { User } from './User';
+import { PropertyImage } from './PropertyImage';
 
 @Entity('tbl_property')
 export class Property extends Commmon {
@@ -14,7 +16,7 @@ export class Property extends Commmon {
   public id: number;
 
   @Column({ name: 'user_id' })
-  public userId: string;
+  public userId: number;
 
   @Column({ name: 'title' })
   public title: string;
@@ -37,4 +39,11 @@ export class Property extends Commmon {
   @ManyToOne((type) => User, (user) => user.property)
   @JoinColumn({ name: 'user_id' })
   public user: User;
+
+  @OneToMany(
+    (type) => PropertyImage,
+    (propertyImage) => propertyImage.property,
+    { cascade: true }
+  )
+  public propertyImage: PropertyImage[];
 }
