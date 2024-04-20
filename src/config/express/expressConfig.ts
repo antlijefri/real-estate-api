@@ -8,6 +8,7 @@ import { PropertyAdminController } from '../../api/controllers/admin/PropertyCon
 import { UserAdminController } from '../../api/controllers/admin/UserController';
 import { UserStoreController } from '../../api/controllers/store/UserController';
 import { PropertyStoreController } from '../../api/controllers/store/PropertyController';
+import { MediaController } from '../../api/controllers/utility/MediaController';
 
 export const initExpress = () => {
   useContainer(Container);
@@ -28,6 +29,7 @@ export const initExpress = () => {
       UserAdminController,
       UserStoreController,
       PropertyStoreController,
+      MediaController
     ],
     authorizationChecker: authorizationChecker,
   });

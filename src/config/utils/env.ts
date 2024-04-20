@@ -24,6 +24,12 @@ export const credential = {
   adminPassword: getEnv('ADMIN_PASS'),
 };
 
+export const mediaConfig = {
+  allowedImageType: getEnv('IMAGE_TYPE').split(','),
+  allowedVideoType: getEnv('VIDEO_TYPE').split(','),
+  allowedDocType: getEnv('DOC_TYPE').split(','),
+};
+
 function getEnv(key: string): string {
   const envExist = process.env[key];
 
@@ -32,4 +38,4 @@ function getEnv(key: string): string {
   }
 
   return envExist;
-}
+};
