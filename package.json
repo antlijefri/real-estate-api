@@ -25,6 +25,7 @@
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.10.4",
+    "sharp": "^0.33.3",
     "typedi": "^0.10.0",
     "typeorm": "^0.3.17",
     "typescript": "^5.2.2"
