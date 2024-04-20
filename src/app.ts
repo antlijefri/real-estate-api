@@ -3,12 +3,16 @@ import { initExpress } from './config/express/expressConfig';
 
 const app = async () => {
   try {
+
     await AppDataSource.initialize();
     console.log(' -------- DataBase Connected --------');
 
-    await initExpress();
+    initExpress();
+
   } catch (err: any) {
+
     throw new Error(err);
+
   }
 };
 
